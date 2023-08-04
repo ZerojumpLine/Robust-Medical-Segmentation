@@ -77,7 +77,7 @@ def nntestATLAS(model, saveresults, name, trainval = False, ImgsegmentSize = [12
                 newZooms = newZooms + [1.0] * (dimsImgToSave - len(newZooms))
             newLabelImg.header.set_zooms(newZooms)
 
-            directory = "../output/ATLAS/%s/" % (name)
+            directory = "./output/ATLAS/%s/" % (name)
             if not os.path.exists(directory):
                 os.makedirs(directory)
             savename = directory + 'pred_' + kname + '_Segm.nii.gz'
@@ -165,7 +165,7 @@ def nntestProstate(model, saveresults, name, trainval = False, ImgsegmentSize = 
                 newZooms = newZooms + [1.0] * (dimsImgToSave - len(newZooms))
             newLabelImg.header.set_zooms(newZooms)
 
-            directory = "../output/Prostate/%s/" % (name)
+            directory = "./output/Prostate/%s/" % (name)
             if not os.path.exists(directory):
                 os.makedirs(directory)
             savename = directory + 'pred_' + kname + '_Segm.nii.gz'
@@ -254,7 +254,7 @@ def nntestCardiac(model, saveresults, name, trainval = False, ImgsegmentSize = [
                 newZooms = newZooms + [1.0] * (dimsImgToSave - len(newZooms))
             newLabelImg.header.set_zooms(newZooms)
 
-            directory = "../output/Cardiac/%s/" % (name)
+            directory = "./output/Cardiac/%s/" % (name)
             if not os.path.exists(directory):
                 os.makedirs(directory)
             savename = directory + 'pred_' + kname + '_Segm.nii.gz'

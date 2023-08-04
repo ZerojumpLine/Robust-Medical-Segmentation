@@ -328,7 +328,7 @@ def get_patch_size(final_patch_size, rot_x, rot_y, rot_z, scale_range):
 
 def save_checkpoint(state, is_best, dataset, Savename, filename='checkpoint.pth.tar'):
     """Saves checkpoint to disk"""
-    directory = "../output/%s/%s/"%(dataset, Savename)
+    directory = "./output/%s/%s/"%(dataset, Savename)
     filename = directory + filename
     torch.save(state, filename)
     if is_best:
