@@ -1,0 +1,12 @@
+./data/Dataset_Prostate/HK/Case45/image.nii.gz
+./data/Dataset_Prostate/HK/Case38/image.nii.gz
+./data/Dataset_Prostate/HK/Case42/image.nii.gz
+./data/Dataset_Prostate/HK/Case48/image.nii.gz
+./data/Dataset_Prostate/HK/Case46/image.nii.gz
+./data/Dataset_Prostate/HK/Case41/image.nii.gz
+./data/Dataset_Prostate/HK/Case49/image.nii.gz
+./data/Dataset_Prostate/HK/Case43/image.nii.gz
+./data/Dataset_Prostate/HK/Case39/image.nii.gz
+./data/Dataset_Prostate/HK/Case44/image.nii.gz
+./data/Dataset_Prostate/HK/Case40/image.nii.gz
+./data/Dataset_Prostate/HK/Case47/image.nii.gz

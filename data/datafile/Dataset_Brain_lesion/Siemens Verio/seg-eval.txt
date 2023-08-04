@@ -1,0 +1,15 @@
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s014/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s004/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s007/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s009/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s010/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s017/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s007/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s009/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s003/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s001/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s008/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s012/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s002/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r023s008/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Verio/sub-r019s001/seg.nii.gz

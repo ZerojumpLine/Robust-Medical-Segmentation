@@ -1,0 +1,13 @@
+./data/Dataset_Prostate/UCL/Case32/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case26/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case35/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case31/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case28/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case36/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case34/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case27/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case01/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case33/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case37/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case29/seg.nii.gz
+./data/Dataset_Prostate/UCL/Case30/seg.nii.gz

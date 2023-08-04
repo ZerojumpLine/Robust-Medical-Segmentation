@@ -1,0 +1,12 @@
+./data/Dataset_Prostate/BIDMC/Case12/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case06/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case08/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case02/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case11/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case05/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case07/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case00/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case04/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case10/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case03/seg.nii.gz
+./data/Dataset_Prostate/BIDMC/Case09/seg.nii.gz

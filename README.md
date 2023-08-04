@@ -3,7 +3,7 @@
 For Conda users, you can create a new Conda environment using
 
 ```
-conda create -n robustseg python=3.9
+conda create -n robustseg python=3.10
 ```
 
 after activating the environment with 
@@ -23,28 +23,41 @@ python -m ipykernel install --user --name=robustseg
 
 ## Dataset
 
-Download the ATLAS data from [this website](https://fcon_1000.projects.nitrc.org/indi/retro/atlas.html). After putting the downloaded data in `./data`, run `datapreprocessing_ATLAS.ipynb` in the `./data` folder to preprocess the data step by step.
-
-Download the preprocessed prostate MRI from [this link](https://drive.google.com/file/d/1fMPqHETCvohh1e6D2rIlddWPLfHuyI8j/view) and contact us for preprocessed cardiac MRI after the usage permissions are granted.
+Download the [ATLAS data](https://fcon_1000.projects.nitrc.org/indi/retro/atlas.html), [prostate MRI data](https://liuquande.github.io/SAML/) and [Cardiac MRI data](https://www.ub.edu/mnms/), and put extracted the data into `./data`.
 
 ```
 data/
-├── MICCAI2022_cardiac_dataset/
-  ├── ACDC/
-  ├── ACDC_artefacted/
-  ├── MM/
-  └── MSCMRSeg_resampled/
-├── MICCAI2022_multi_site_prostate_dataset/
-  ├── reorganized/
-    ├── A-ISBI/
+├── ATLAS_R2.0/
+  ├── ATLAS_2/
+    ├── Training/
     ├── ...
-    ├── F-HK/
-    └── G-MedicalDecathlon/
-├── Brain_lesion_dataset/
-  ├──reorganized/
-    ├── GE Signa Excite/
-    ├── ...
-    └── Siemens Skyra/
+    └── ...
+├── Processed_data_nii/
+  ├── BIDMC/
+  ├── ...
+  └── ...
+├── OpenDataset/
+  ├── Training/
+  ├── ...
+  └── ...
+```
+
+Run `datapreprocessing_ATLAS.ipynb`, `datapreprocessing_MnMCardiac.ipynb` and `datapreprocessing_Prostate.ipynb` in the `./data` folder to preprocess the data step by step. After preprocessing, we should have the data format like:
+
+```
+data/
+├── Dataset_Cardiac/
+  ├── 1/
+  ├── ...
+  └── 5/
+├── Dataset_Prostate/
+  ├── ISBI/
+  ├── ...
+  ├── HK/
+├── Dataset_Brain_lesion/
+  ├── GE Signa Excite/
+  ├── ...
+  └── Siemens Skyra/
 ```
 
 ## Training
@@ -53,16 +66,19 @@ data/
 
 Cardiac
 ```
-python src/train_adv_supervised_segmentation_triplet.py --json_config_path ./config/ACDC/1500_epoch/standard_training.json --cval 0 --seed 40 --data_setting 'standard' --auto_test --log
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Cardiac_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 8 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 1 --gpu 0 --det
 ```
 
 Prostate
 ```
-python src/train_adv_supervised_segmentation_triplet.py --json_config_path ./config/Prostate/MICCAI2022_MaxStyle.json  --cval 0 --seed 40 --data_setting 'all' --auto_test --log
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Prostate_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 64 64 32 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 2 --gpu 0 --det
 ```
 
 Brain lesion
 
+```
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --det
+```
 
 ### Robust training.
 
@@ -73,5 +89,5 @@ Brain lesion
 ## Evaluation
 
 ```
-python src/train_adv_supervised_segmentation_triplet.py --cval 0 --seed 40 --json_config_path ./config/ACDC/1500_epoch/MICCAI2022_MaxStyle.json --log --data_setting 10 --no_train
+CUDA_VISIBLE_DEVICES=0 python src/train_adv_supervised_segmentation_triplet.py --cval 0 --seed 40 --json_config_path ./config/ACDC/1500_epoch/MICCAI2022_MaxStyle.json --log --data_setting 10 --no_train
 ```

@@ -1,0 +1,2 @@
+./data/Dataset_Brain_lesion/Siemens Sonata/sub-r039s003/seg.nii.gz
+./data/Dataset_Brain_lesion/Siemens Sonata/sub-r039s002/seg.nii.gz
