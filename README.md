@@ -66,12 +66,12 @@ data/
 
 Cardiac
 ```
-python UNetSegmentationTrain.py --name 3DUNet_vanilla_Cardiac_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 8 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 1 --gpu 0 --det
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Cardiac_det --tensorboard --features 30 --deepsupervision --batch-size 32 --patch-size 128 128 8 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 1 --gpu 0 --det
 ```
 
 Prostate
 ```
-python UNetSegmentationTrain.py --name 3DUNet_vanilla_Prostate_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 64 64 32 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 2 --gpu 0 --det
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Prostate_det --tensorboard --features 30 --deepsupervision --batch-size 32 --patch-size 64 64 32 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 2 --gpu 0 --det
 ```
 
 Brain lesion

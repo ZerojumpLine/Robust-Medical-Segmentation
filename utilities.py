@@ -332,7 +332,7 @@ def save_checkpoint(state, is_best, dataset, Savename, filename='checkpoint.pth.
     filename = directory + filename
     torch.save(state, filename)
     if is_best:
-        shutil.copyfile(filename, '../output/%s/%s/'%(dataset, Savename) + 'model_best.pth.tar')
+        shutil.copyfile(filename, './output/%s/%s/'%(dataset, Savename) + 'model_best.pth.tar')
 
 def class2one_hot(seg: Tensor, C: int) -> Tensor:
     if len(seg.shape) == 2:  # Only w, h, used by the dataloader

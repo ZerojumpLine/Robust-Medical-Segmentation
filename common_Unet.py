@@ -92,10 +92,10 @@ def validateATLAS(DatafileValFold, model, logging, epoch, Savename, args):
     logging.info('PREC ' + str(PREC))
     # log to TensorBoard
     if args.tensorboard:
-        log_value('DSCavg', np.mean(DSC[1:]), epoch)
-        log_value('SENSavg', np.mean(SENS[1:]), epoch)
-        log_value('PRECavg', np.mean(PREC[1:]), epoch)
-    return np.mean(DSC[1:])
+        log_value('DSClesion', DSC[0], epoch)
+        log_value('SENSlesion', SENS[0], epoch)
+        log_value('PREClesion', PREC[0], epoch)
+    return DSC.mean()
 
 def validateProstate(DatafileValFold, model, logging, epoch, Savename, args):
     model.eval()
@@ -109,10 +109,10 @@ def validateProstate(DatafileValFold, model, logging, epoch, Savename, args):
     logging.info('PREC ' + str(PREC))
     # log to TensorBoard
     if args.tensorboard:
-        log_value('DSCavg', np.mean(DSC[1:]), epoch)
-        log_value('SENSavg', np.mean(SENS[1:]), epoch)
-        log_value('PRECavg', np.mean(PREC[1:]), epoch)
-    return np.mean(DSC[1:])
+        log_value('DSCprostate', DSC[0], epoch)
+        log_value('SENSprostate', SENS[0], epoch)
+        log_value('PRECprostate', PREC[0], epoch)
+    return DSC.mean()
 
 def validateCardiac(DatafileValFold, model, logging, epoch, Savename, args):
     model.eval()
@@ -126,17 +126,14 @@ def validateCardiac(DatafileValFold, model, logging, epoch, Savename, args):
     logging.info('PREC ' + str(PREC))
     # log to TensorBoard
     if args.tensorboard:
-        log_value('DSCc1', DSC[1], epoch)
-        log_value('DSCc2', DSC[2], epoch)
-        log_value('DSCc3', DSC[3], epoch)
-        log_value('DSCavg', np.mean(DSC[1:]), epoch)
-        log_value('SENSc1', SENS[1], epoch)
-        log_value('SENSc2', SENS[2], epoch)
-        log_value('SENSc3', SENS[3], epoch)
-        log_value('SENSavg', np.mean(SENS[1:]), epoch)
-        log_value('PRECc1', PREC[1], epoch)
-        log_value('PRECc2', PREC[2], epoch)
-        log_value('PRECc3', PREC[3], epoch)
-        log_value('PRECavg', np.mean(PREC[1:]), epoch)
-    return np.mean(DSC[1:])
+        log_value('DSCc1', DSC[0], epoch)
+        log_value('SENSc1', SENS[0], epoch)
+        log_value('PRECc1', PREC[0], epoch)
+        log_value('DSCc2', DSC[1], epoch)
+        log_value('SENSc2', SENS[1], epoch)
+        log_value('PRECc2', PREC[1], epoch)
+        log_value('DSCc3', DSC[2], epoch)
+        log_value('SENSc3', SENS[2], epoch)
+        log_value('PRECc3', PREC[2], epoch)
+    return DSC.mean()
 

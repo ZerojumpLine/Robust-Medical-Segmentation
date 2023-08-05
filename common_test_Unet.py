@@ -90,7 +90,7 @@ def nntestATLAS(model, saveresults, name, trainval = False, ImgsegmentSize = [12
 
         DSClist.append([DSCc1])
         SENSlist.append([SENSc1])
-        PREClist.append([PRECc1,])
+        PREClist.append([PRECc1])
         print('case ' + str(numr) + ' done')
 
     DSClist = np.array(DSClist)
@@ -178,7 +178,7 @@ def nntestProstate(model, saveresults, name, trainval = False, ImgsegmentSize = 
 
         DSClist.append([DSCc1])
         SENSlist.append([SENSc1])
-        PREClist.append([PRECc1,])
+        PREClist.append([PRECc1])
         print('case ' + str(numr) + ' done')
 
     DSClist = np.array(DSClist)
@@ -260,8 +260,6 @@ def nntestCardiac(model, saveresults, name, trainval = False, ImgsegmentSize = [
             savename = directory + 'pred_' + kname + '_Segm.nii.gz'
             nib.save(newLabelImg, savename)
 
-        labelc0 = gtlabel > 0
-        predc0 = imgToSave > 0
         labelc1 = gtlabel == 1
         predc1 = imgToSave == 1
         labelc2 = gtlabel == 2
@@ -269,22 +267,22 @@ def nntestCardiac(model, saveresults, name, trainval = False, ImgsegmentSize = [
         labelc3 = gtlabel == 3
         predc3 = imgToSave == 3
 
-        DSCc0, SENSc0, PRECc0 = ComputMetric(labelc0, predc0)
         DSCc1, SENSc1, PRECc1 = ComputMetric(labelc1, predc1)
         DSCc2, SENSc2, PRECc2 = ComputMetric(labelc2, predc2)
         DSCc3, SENSc3, PRECc3 = ComputMetric(labelc3, predc3)
 
-        DSClist.append([DSCc0, DSCc1, DSCc2, DSCc3])
-        SENSlist.append([SENSc0, SENSc1, SENSc2, SENSc3])
-        PREClist.append([PRECc0, PRECc1, PRECc2, PRECc3])
+        # print(DSCwt)
+        DSClist.append([DSCc1, DSCc2, DSCc3])
+        SENSlist.append([SENSc1, SENSc2, SENSc3])
+        PREClist.append([PRECc1, PRECc2, PRECc3])
         print('case ' + str(numr) + ' done')
 
-    DSClist = np.array(DSClist)
-    DSCmean = DSClist.mean(axis=0)
-    SENSlist = np.array(SENSlist)
-    SENSmean = SENSlist.mean(axis=0)
-    PREClist = np.array(PREClist)
-    PRECmean = PREClist.mean(axis=0)
+    DSCmean = np.array(DSClist)
+    DSCmean = DSCmean.mean(axis=0)
+    SENSmean = np.array(SENSlist)
+    SENSmean = SENSmean.mean(axis=0)
+    PRECmean = np.array(PREClist)
+    PRECmean = PRECmean.mean(axis=0)
 
     return DSCmean, SENSmean, PRECmean
 
