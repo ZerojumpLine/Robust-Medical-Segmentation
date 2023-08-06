@@ -14,14 +14,13 @@ import torch.optim
 import torch.utils.data
 import numpy as np
 from Unet import Generic_UNet, InitWeights_He
-from utilities import SoftDiceLoss, accuracy
 from common_Unet import adjust_learning_rate, AverageMeter, calculate_loss_origin
 # used for logging to TensorBoard
 import multiprocessing as mp
 from multiprocessing.pool import ThreadPool
 from sampling_multiprocess import getbatch
 from tensorboard_logger import configure, log_value
-from utilities import convert_seg_image_to_one_hot_encoding_batched, resize_segmentation, save_checkpoint
+from utilities import save_checkpoint, accuracy
 os.environ['KMP_WARNINGS'] = 'off'
 
 parser = argparse.ArgumentParser(description='PyTorch nnU-Net Training')
@@ -101,10 +100,6 @@ def main():
         os.makedirs(directory)
     log_format = '%(asctime)s %(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format, datefmt='%m/%d %I:%M:%S %p')
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': True,
-    })
     fh = logging.FileHandler(os.path.join(directory, 'log.txt'))
     fh.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(fh)
@@ -115,7 +110,11 @@ def main():
     torch.cuda.set_device(args.gpu)
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
-    
+    # ignore the nibabel warnings.
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': True,
+    })
 
     if args.tensorboard: configure("./output/%s/%s"%(dataset, Savename))
 

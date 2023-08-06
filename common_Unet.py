@@ -1,10 +1,9 @@
 import torch
 import numpy as np
 import torch.nn as nn
-from utilities import SoftDiceLoss
+from utilities import SoftDiceLoss, resize_segmentation
 from tensorboard_logger import log_value
 import torch.nn.functional as F
-from utilities import resize_segmentation
 import time
 from common_test_Unet import nntestProstate, nntestATLAS, nntestCardiac
 
