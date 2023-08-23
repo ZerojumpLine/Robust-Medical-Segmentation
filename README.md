@@ -66,7 +66,7 @@ data/
 
 Cardiac
 ```
-python UNetSegmentationTrain.py --name 3DUNet_vanilla_Cardiac_det --tensorboard --features 30 --deepsupervision --batch-size 32 --patch-size 128 128 8 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 1 --gpu 0 --det
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Cardiac_det --tensorboard --features 30 --deepsupervision --batch-size 30 --patch-size 128 128 8 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 1 --gpu 0 --det
 ```
 
 Prostate
@@ -84,10 +84,35 @@ python UNetSegmentationTrain.py --name 3DUNet_vanilla_ATLAS_det --tensorboard --
 
 ### Class balanced training.
 
+Brain lesion asymmetric large margin loss
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_asymargin_2_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --asy-margin 2 --det
+```
+
+Brain lesion asymmetric focal loss
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_asyfocal_6_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --asy-focal 6 --det
+```
+
 ### Robust class balanced training
+
+Brain lesion mixup
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_mixup_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --mixup --det
+```
+
+Brain lesion adversarial training
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_adv_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --adv --det
+```
+
 
 ## Evaluation
 
 ```
-CUDA_VISIBLE_DEVICES=0 python src/train_adv_supervised_segmentation_triplet.py --cval 0 --seed 40 --json_config_path ./config/ACDC/1500_epoch/MICCAI2022_MaxStyle.json --log --data_setting 10 --no_train
+UNetSegmentationTest.ipynb
 ```

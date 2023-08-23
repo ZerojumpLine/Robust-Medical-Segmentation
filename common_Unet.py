@@ -1,7 +1,8 @@
 import torch
+from torch import Tensor
 import numpy as np
 import torch.nn as nn
-from utilities import SoftDiceLoss, resize_segmentation
+from utilities import SoftDiceLoss, mSoftDiceLoss, resize_segmentation, one_hot_embedding
 from tensorboard_logger import log_value
 import torch.nn.functional as F
 import time
@@ -36,7 +37,7 @@ def adjust_learning_rate(optimizer, epoch, args):
         param_group['lr'] = lr
     return lr
 
-def calculate_loss_origin(args, target_var, output, criterion = nn.CrossEntropyLoss().cuda()):
+def calculate_loss_origin(args, target_var, output, do_mixup = False):
     '''
     This is just an update function to make sure the calculated loss is identity to the original in some cases
     '''
@@ -72,12 +73,87 @@ def calculate_loss_origin(args, target_var, output, criterion = nn.CrossEntropyL
 
             target_vars = target_vars.long().cuda()
             target_vars = torch.autograd.Variable(target_vars)
-            losssample += weights[kds] * (criterion(output[kds], target_vars) + 
-                    SoftDiceLoss(output[kds], target_vars, list(range(args.NumsClass))))
+
+            losssample += weights[kds] * imbalaned_loss_calculation(args, output[kds], target_vars, do_mixup)
     else:
-        losssample = SoftDiceLoss(output, target_var, list(range(args.NumsClass))) + criterion(output, target_var)
+        losssample = imbalaned_loss_calculation(args, output, target_var, do_mixup)
     return losssample
 
+def imbalaned_loss_calculation(args, output: Tensor, target_var: Tensor, do_mixup = False) -> Tensor:
+    '''
+    output:     N x C x H x W x D
+    target_var: N x H x W x D
+    Here I assume C = 2, in other words, only for binary segmentation
+    taken from https://github.com/ZerojumpLine/OverfittingUnderClassImbalance/
+    '''
+    inp = output
+    target = target_var.long()
+    num_classes = inp.size()[1]
+
+    i0 = 1
+    i1 = 2
+
+    while i1 < len(inp.shape): # this is ugly but torch only allows to transpose two axes at once
+        inp = inp.transpose(i0, i1)
+        i0 += 1
+        i1 += 1
+
+    inp = inp.contiguous()
+    inp = inp.view(-1, num_classes)
+
+    target = target.view(-1,)
+
+    # now inp is [N,C], target is [N,]
+    y_one_hot = one_hot_embedding(target.data.cpu(), num_classes)
+    y_one_hot = y_one_hot.cuda()
+
+    ################# mix up #################
+    if do_mixup:
+        targetmix = target.flip(0)
+        targetmix = targetmix.long()
+        targetmix = targetmix.view(-1,)
+        y_one_hotmix = one_hot_embedding(targetmix.data.cpu(), num_classes)
+        y_one_hotmix = y_one_hotmix.cuda()
+        y_one_hot = args.lam * y_one_hot + (1 - args.lam) * y_one_hotmix
+
+    ################# asymmetric large margin loss #################
+    r = [0, 1]
+    r = torch.reshape(torch.tensor(r), [1, len(r)])
+    rRepeat = torch.cat(inp.shape[0] * [r])
+    # this is the input to softmax, which will give us q
+    inppost = inp - rRepeat.float().cuda() * y_one_hot * args.asy_margin
+    
+    # do the softmax and get q
+    p_y_given_x_train = torch.softmax(inppost, 1)
+    e1 = 1e-6  ## without the small margin, it would lead to nan after several epochs
+    log_p_y_given_x_train = (p_y_given_x_train + e1).log()
+
+    ################# asymmetric focal loss #################
+    r = [0, 1]
+    r = torch.reshape(torch.tensor(r), [1, len(r)])
+    rRepeat = torch.cat(log_p_y_given_x_train.shape[0] * [r])
+
+    focal_conduct_active = (1 - p_y_given_x_train + e1) ** args.asy_focal
+    focal_conduct_inactive = torch.ones(p_y_given_x_train.size())
+
+    focal_conduct = focal_conduct_active * (1-rRepeat.float().cuda()) + focal_conduct_inactive.cuda() * rRepeat.float().cuda()
+    m_log_p_y_given_x_train = focal_conduct * log_p_y_given_x_train
+
+    num_samples = m_log_p_y_given_x_train.size()[0]
+
+    ce_loss = - (1. / num_samples) * m_log_p_y_given_x_train * y_one_hot
+    ce_loss = ce_loss.sum()
+
+    inpost = torch.reshape(inppost, (output.shape[0], output.shape[2], output.shape[3], output.shape[4], output.shape[1]))
+    # then use transpose [B, H, W, D, C] to [B, C, H, W, D]
+    inpost = inpost.transpose(4, 3)
+    inpost = inpost.transpose(3, 2)
+    inpost = inpost.transpose(2, 1)
+    dc_loss = mSoftDiceLoss(inpost, target_var, focal_conduct)
+
+    loss_func = dc_loss + ce_loss
+
+    return loss_func
 
 def validateATLAS(DatafileValFold, model, logging, epoch, Savename, args):
     model.eval()

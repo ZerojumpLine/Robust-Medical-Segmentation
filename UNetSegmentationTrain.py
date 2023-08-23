@@ -38,6 +38,14 @@ parser.add_argument('--numIteration', default=700, type=int, help='num of iterat
 parser.add_argument('--lr', default=1e-4, type=float, help='initial learning rate')
 parser.add_argument('--sgd0orAdam1orRms2', default=2, type=float, help='choose the optimizer')
 parser.add_argument('--det', action='store_true', help='control seed to for control experiments')
+# Parameters for different learning strategies
+parser.add_argument('--asy-margin', default=0, type=float, help='imbalaned learning - margin for asymmetric large margin loss')
+parser.add_argument('--asy-focal', default=0, type=float, help='imbalaned learning - gamma for asymmetric focal loss')
+parser.add_argument('--mixup', action='store_true', help='mixup of training samples')
+parser.add_argument('--alpha', default=0.2, type=float, help='robust learning - alpha parameters for mixup')
+parser.add_argument('--adv', action='store_true', help='enable adversarial training process')
+parser.add_argument('--eps', default=50, type=float, help='robust learning - l parameters for adversarial training')
+parser.add_argument('--xi', default=1e-5, type=float, help='robust learning - epsilon parameters for adversarial training')
 # Network configures.
 parser.add_argument('--maxsample', type=float, default=50, help='sample from cases, large number leads to longer time')
 parser.add_argument('--evalevery', type=float, default=10, help='evaluation every epoches')
@@ -71,8 +79,8 @@ def main():
         dataset = 'ATLAS'
         # this is for brain lesion
         from common_Unet import validateATLAS as validate
-        DatafileTrainqueueFold = './data/datafile/Dataset_Brain_lesion/GE 750 Discoverytraining/'
-        DatafileValFold = './data/datafile/Dataset_Brain_lesion/GE 750 Discoverytest/'
+        DatafileTrainqueueFold = './data/datafile/Dataset_Brain_lesion/Siemens Triotraining/'
+        DatafileValFold = './data/datafile/Dataset_Brain_lesion/Siemens Triotest/'
         args.NumsInputChannel = 1
         args.NumsClass = 2
     if args.ATLAS0Cardiac1Prostate2 == 1:
@@ -211,8 +219,7 @@ def main():
             sampling_job = mp_pool.apply_async(getbatch, (DatafileTrainqueueFold, args.batch_size,
                                                           args.numIteration, args.maxsample,
                                                           logging, args.patch_size))
-        # input shape N, H, W, D, Channl
-        # target shape N, H, W, D, Class
+        
         inputnor = sampling_results[0]
         target = sampling_results[1]
 
@@ -257,14 +264,71 @@ def train(inputnor, target, model, optimizer, epoch, logging, args):
         inputnor_var = inputnorpick.float().cuda()
         inputnor_var = torch.autograd.Variable(inputnor_var)
 
+        # inputnor_var: N x C x H x W x D
+        # target_var: N x H x W x D
+
+        if args.mixup:
+            '''
+            mix up the samples in a training batch
+            '''
+            lam = np.random.beta(args.alpha, args.alpha)
+            args.lam = lam # a litte dummy, pass the parameter later for loss calculation
+            # just emphasize the effect by collecting more middle regions
+            datamix = inputnor_var.flip(0)
+            # just flip the sample in the batch to be the sample to be mixed
+            inputnor_var_mixup = lam * inputnor_var + (1. - lam) * datamix
+            # calculate loss and back propogate
+            output_mixup = model(inputnor_var_mixup)
+            if args.deepsupervision:
+                out_mixup = []
+                for kds in range(args.downsampling):
+                    outtemp = output_mixup[kds]
+                    out_mixup.append(outtemp)
+            else:
+                out_mixup = output_mixup
+            loss_mixup = calculate_loss_origin(args, target_var, out_mixup, do_mixup=True)
+            optimizer.zero_grad()
+            loss_mixup.backward()
+            ## hyper-parameters from nnunet...
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 12)
+            optimizer.step()
+        
+        if args.adv:
+            '''
+            add adversarial noise to the input
+            '''
+            # find the direction
+            r_vadv = generate_virtual_adversarial_perturbation(args, model, inputnor_var, target_var)
+            r_vadv = r_vadv.detach()
+            ## the third step, train using the argumented results
+            inputnor_var_adv = inputnor_var + r_vadv
+            # calculate loss and back propogate
+            output_adv = model(inputnor_var_adv)
+            if args.deepsupervision:
+                out_adv = []
+                for kds in range(args.downsampling):
+                    outtemp = output_adv[kds]
+                    out_adv.append(outtemp)
+            else:
+                out_adv = output_adv
+            loss_adv = calculate_loss_origin(args, target_var, out_adv)
+            optimizer.zero_grad()
+            loss_adv.backward()
+            ## hyper-parameters from nnunet...
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 12)
+            optimizer.step()
+            
         # compute output
         output = model(inputnor_var)
 
         # folowing nnunet...
-        outorigin = []
-        for kds in range(args.downsampling):
-            outtemp = output[kds]
-            outorigin.append(outtemp[:, 0:args.NumsClass, :, : , :])
+        if args.deepsupervision:
+            outorigin = []
+            for kds in range(args.downsampling):
+                outtemp = output[kds]
+                outorigin.append(outtemp)
+        else:
+            outorigin = output
         loss = calculate_loss_origin(args, target_var, outorigin)
 
         optimizer.zero_grad()
@@ -300,6 +364,36 @@ def train(inputnor, target, model, optimizer, epoch, logging, args):
     if args.tensorboard:
         log_value('train_loss', losses.avg, epoch)
         log_value('train_acc', top1.avg, epoch)
+
+def generate_virtual_adversarial_perturbation(args, model, data, target):
+    d = torch.randn(data.size())
+    d = d.cuda(non_blocking=True)
+    d = args.xi * get_normalized_vector(d)
+
+    d.requires_grad = True
+    output = model(data + d)
+    # folowing nnunet...
+    if args.deepsupervision:
+        logit_m = []
+        for kds in range(args.downsampling):
+            outtemp = output[kds]
+            logit_m.append(outtemp)
+    else:
+        logit_m = output
+    dist = calculate_loss_origin(args, target, logit_m)
+    grad = torch.autograd.grad(dist, d)[0] # return a tuple?
+    d = grad.detach()
+
+    return args.eps * get_normalized_vector(d)
+
+def get_normalized_vector(d):
+    dmax = torch.zeros(d.shape[0], 1, 1, 1, 1)
+    dmax = dmax.cuda(non_blocking=True)
+    for k in range(0, d.shape[0]):
+        dmax[k, :, :, :, :] = (1e-12 + torch.max(d[k, :, :, :, :]))
+    d /= dmax
+    d /= torch.sqrt(1e-6 + torch.sum(d.pow(2), dim=tuple(list(range(1, len(d.shape)))), keepdim=True))
+    return d
 
 if __name__ == '__main__':
     main()
