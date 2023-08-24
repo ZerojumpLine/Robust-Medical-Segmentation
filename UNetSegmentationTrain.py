@@ -20,7 +20,7 @@ import multiprocessing as mp
 from multiprocessing.pool import ThreadPool
 from sampling_multiprocess import getbatch
 from tensorboard_logger import configure, log_value
-from utilities import save_checkpoint, accuracy
+from utilities import save_checkpoint, accuracy, GINGroupConv3D
 os.environ['KMP_WARNINGS'] = 'off'
 
 parser = argparse.ArgumentParser(description='PyTorch nnU-Net Training')
@@ -42,6 +42,7 @@ parser.add_argument('--det', action='store_true', help='control seed to for cont
 parser.add_argument('--asy-margin', default=0, type=float, help='imbalaned learning - margin for asymmetric large margin loss')
 parser.add_argument('--asy-focal', default=0, type=float, help='imbalaned learning - gamma for asymmetric focal loss')
 parser.add_argument('--mixup', action='store_true', help='mixup of training samples')
+parser.add_argument('--GIN', action='store_true', help='enable GIN')
 parser.add_argument('--alpha', default=0.2, type=float, help='robust learning - alpha parameters for mixup')
 parser.add_argument('--adv', action='store_true', help='enable adversarial training process')
 parser.add_argument('--eps', default=50, type=float, help='robust learning - l parameters for adversarial training')
@@ -317,7 +318,11 @@ def train(inputnor, target, model, optimizer, epoch, logging, args):
             ## hyper-parameters from nnunet...
             torch.nn.utils.clip_grad_norm_(model.parameters(), 12)
             optimizer.step()
-            
+        
+        if args.GIN:
+            augmenter = GINGroupConv3D(out_channel = 1, in_channel = 1).cuda()
+            inputnor_var = augmenter(inputnor_var)
+
         # compute output
         output = model(inputnor_var)
 
