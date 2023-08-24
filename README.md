@@ -104,13 +104,23 @@ Brain lesion mixup
 python UNetSegmentationTrain.py --name 3DUNet_mixup_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --mixup --det
 ```
 
+Brain lesion assymetric mixup
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_asymixup_m02_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --mixup --asy --alpha 1 --det
+```
+
 Brain lesion adversarial training
 
 ```
 python UNetSegmentationTrain.py --name 3DUNet_adv_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --adv --det
 ```
 
+Brain lesion GIN
 
+```
+python UNetSegmentationTrain.py --name 3DUNet_GIN_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --GIN --det
+```
 
 
 ## Evaluation

@@ -42,6 +42,8 @@ parser.add_argument('--det', action='store_true', help='control seed to for cont
 parser.add_argument('--asy-margin', default=0, type=float, help='imbalaned learning - margin for asymmetric large margin loss')
 parser.add_argument('--asy-focal', default=0, type=float, help='imbalaned learning - gamma for asymmetric focal loss')
 parser.add_argument('--mixup', action='store_true', help='mixup of training samples')
+parser.add_argument('--asy', action='store_true', help='doing assymetric mixup')
+parser.add_argument('--margin', default=0.2, type=float, help='margin for assymetric mixup')
 parser.add_argument('--GIN', action='store_true', help='enable GIN')
 parser.add_argument('--alpha', default=0.2, type=float, help='robust learning - alpha parameters for mixup')
 parser.add_argument('--adv', action='store_true', help='enable adversarial training process')
