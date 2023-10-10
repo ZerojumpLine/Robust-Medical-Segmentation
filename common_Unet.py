@@ -131,11 +131,11 @@ def imbalaned_loss_calculation(args, output: Tensor, target_var: Tensor, do_mixu
                 y_comb1 = torch.where(targetmix == rindex, targetmix, y_comb1)
 
             # if the another component mixup lambda is less than the margin, set as tumor
-            if args.lam < args.margin:
+            if args.lam < 1- args.margin:
                 y_one_hot = one_hot_embedding(y_comb0.data.cpu(), num_classes)
             else:
                 y_one_hot = one_hot_embedding(target.data.cpu(), num_classes)
-            if 1-args.lam < args.margin:
+            if 1-args.lam < 1 - args.margin:
                 y_one_hotmix = one_hot_embedding(y_comb1.data.cpu(), num_classes)
             else:
                 y_one_hotmix = one_hot_embedding(targetmix.data.cpu(), num_classes)
@@ -144,10 +144,14 @@ def imbalaned_loss_calculation(args, output: Tensor, target_var: Tensor, do_mixu
             # have no loss when background and kidney are mixed, or tumor is small
             # it might have problems, gradients of DSC are backwards, (it would be eventually taken as BG, which is not as expected.)
             ydsclossposition = torch.zeros(y_one_hotmixup.size()[0], dtype=torch.bool)
+            '''
+            Asymetric mixup does not work well here. Here is the problem? Just keep the middel results.
+            '''
             for kcls in range(y_one_hotmixup.size()[1]):
                 ydsclosspositionccls = (y_one_hotmixup[:, kcls] > 0) & (y_one_hotmixup[:, kcls] < 1)
                 ydsclossposition = ydsclossposition.float() + ydsclosspositionccls.float()
-            ydsclossposition = 1 - ydsclossposition # this would be 0/1, 0 indicates that there are portion which I dont want.
+            ydsclossposition = 1 - ydsclossposition 
+            ydsclossposition = ydsclossposition == 1 # this would be 0/1, 0 indicates that there are portion which I dont want.
             y_one_hotmixup = torch.floor(y_one_hotmixup)
             y_one_hot = y_one_hotmixup
         else:
