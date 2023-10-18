@@ -1,12 +1,3 @@
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r003s004/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r002s009/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r002s006/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r034s003/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r034s011/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r003s001/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r034s033/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r004s028/image.nii.gz
-./data/Dataset_Brain_lesion/Siemens Trio/sub-r002s008/image.nii.gz
 ./data/Dataset_Brain_lesion/Siemens Trio/sub-r003s013/image.nii.gz
 ./data/Dataset_Brain_lesion/Siemens Trio/sub-r003s003/image.nii.gz
 ./data/Dataset_Brain_lesion/Siemens Trio/sub-r004s034/image.nii.gz

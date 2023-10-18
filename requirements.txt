@@ -1,3 +1,4 @@
+jupyter
 ipykernel==6.9.1
 simpleitk==2.2.1
 scipy==1.9.1
