@@ -125,6 +125,8 @@ python UNetSegmentationTrain.py --name 3DUNet_GIN_ATLAS_det --tensorboard --feat
 
 ## Evaluation
 
+We provide pretrained segmentation models [here](https://drive.google.com/file/d/1H_lt-D2-aggz_-6oEiQDGKaXOAWsMIiy/view?usp=drive_link).
+
 ```
 UNetSegmentationTest.ipynb
 ```
