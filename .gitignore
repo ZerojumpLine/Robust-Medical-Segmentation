@@ -32,9 +32,7 @@ data/ATLAS*
 data/Processed*
 data/OpenDataset*
 data/Dataset*
-output/ATLAS*
-output/Cardiac*
-output/Prostate*
+output/*
 checkpoint*
 
 # PyInstaller
