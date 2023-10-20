@@ -1,6 +1,6 @@
+./data/Dataset_Prostate/BMC/Case17/seg.nii.gz
 ./data/Dataset_Prostate/BMC/Case18/seg.nii.gz
-./data/Dataset_Prostate/BMC/Case23/seg.nii.gz
-./data/Dataset_Prostate/BMC/Case27/seg.nii.gz
 ./data/Dataset_Prostate/BMC/Case14/seg.nii.gz
 ./data/Dataset_Prostate/BMC/Case06/seg.nii.gz
-./data/Dataset_Prostate/BMC/Case13/seg.nii.gz
+./data/Dataset_Prostate/BMC/Case27/seg.nii.gz
+./data/Dataset_Prostate/BMC/Case23/seg.nii.gz
