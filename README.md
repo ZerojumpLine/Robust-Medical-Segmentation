@@ -80,8 +80,6 @@ Brain lesion
 python UNetSegmentationTrain.py --name 3DUNet_vanilla_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --det
 ```
 
-### Robust training.
-
 ### Class balanced training.
 
 Brain lesion asymmetric large margin loss
@@ -96,7 +94,7 @@ Brain lesion asymmetric focal loss
 python UNetSegmentationTrain.py --name 3DUNet_asyfocal_6_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --asy-focal 6 --det
 ```
 
-### Robust class balanced training
+### Robust training
 
 Brain lesion mixup
 
