@@ -1,0 +1,35 @@
+[I 2024-03-25 21:38:31.459 ServerApp] Package notebook took 0.0000s to import
+[I 2024-03-25 21:38:31.599 ServerApp] Package jupyter_lsp took 0.1392s to import
+[W 2024-03-25 21:38:31.599 ServerApp] A `_jupyter_server_extension_points` function was not found in jupyter_lsp. Instead, a `_jupyter_server_extension_paths` function was found and will be used for now. This function name will be deprecated in future releases of Jupyter Server.
+[I 2024-03-25 21:38:31.708 ServerApp] Package jupyter_server_terminals took 0.1095s to import
+[I 2024-03-25 21:38:31.709 ServerApp] Package jupyterlab took 0.0000s to import
+[I 2024-03-25 21:38:32.089 ServerApp] Package notebook_shim took 0.0000s to import
+[W 2024-03-25 21:38:32.089 ServerApp] A `_jupyter_server_extension_points` function was not found in notebook_shim. Instead, a `_jupyter_server_extension_paths` function was found and will be used for now. This function name will be deprecated in future releases of Jupyter Server.
+[I 2024-03-25 21:38:32.091 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2024-03-25 21:38:32.096 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[I 2024-03-25 21:38:32.100 ServerApp] jupyterlab | extension was successfully linked.
+[I 2024-03-25 21:38:32.104 ServerApp] notebook | extension was successfully linked.
+[I 2024-03-25 21:38:34.964 ServerApp] notebook_shim | extension was successfully linked.
+[I 2024-03-25 21:38:35.123 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2024-03-25 21:38:35.126 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2024-03-25 21:38:35.127 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2024-03-25 21:38:35.140 LabApp] JupyterLab extension loaded from /well/win-fmrib-analysis/users/gqu790/conda/skylake/envs/robustseg/lib/python3.10/site-packages/jupyterlab
+[I 2024-03-25 21:38:35.141 LabApp] JupyterLab application directory is /gpfs3/well/win-fmrib-analysis/users/gqu790/conda/skylake/envs/robustseg/share/jupyter/lab
+[I 2024-03-25 21:38:35.142 LabApp] Extension Manager is 'pypi'.
+[I 2024-03-25 21:38:35.144 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2024-03-25 21:38:35.147 ServerApp] notebook | extension was successfully loaded.
+[I 2024-03-25 21:38:35.148 ServerApp] The port 9389 is already in use, trying another port.
+[I 2024-03-25 21:38:35.148 ServerApp] Serving notebooks from local directory: /gpfs3/well/win-fmrib-analysis/users/gqu790/moval/Robust-Medical-Segmentation/data
+[I 2024-03-25 21:38:35.148 ServerApp] Jupyter Server 2.8.0 is running at:
+[I 2024-03-25 21:38:35.148 ServerApp] http://127.0.0.1:9390/tree?token=036c288167c9cf940c0862a32ccb08d59c5c25360dc95d38
+[I 2024-03-25 21:38:35.148 ServerApp]     http://127.0.0.1:9390/tree?token=036c288167c9cf940c0862a32ccb08d59c5c25360dc95d38
+[I 2024-03-25 21:38:35.148 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 2024-03-25 21:38:35.167 ServerApp] No web browser found: Error('could not locate runnable browser').
+[C 2024-03-25 21:38:35.167 ServerApp] 
+    
+    To access the server, open this file in a browser:
+        file:///gpfs3/users/win-fmrib-analysis/gqu790/.local/share/jupyter/runtime/jpserver-13969-open.html
+    Or copy and paste one of these URLs:
+        http://127.0.0.1:9390/tree?token=036c288167c9cf940c0862a32ccb08d59c5c25360dc95d38
+        http://127.0.0.1:9390/tree?token=036c288167c9cf940c0862a32ccb08d59c5c25360dc95d38
+[I 2024-03-25 21:38:35.213 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
