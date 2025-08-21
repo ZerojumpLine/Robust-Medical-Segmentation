@@ -20,7 +20,7 @@ from batchgenerators.transforms.utility_transforms import RemoveLabelTransform, 
 # random.seed(12345)
 ## take image as 37*37*37, and the target as 21*21*21
 
-def getbatch(DatafileFold, batch_size, iteration, maximumcase, logging, ImgsegmentSize=[80,80,80]):
+def getbatch(DatafileFold, batch_size, iteration, maximumcase, logging, ImgsegmentSize=[80,80,80], channel = 1):
 
     # LabelsegmentSize = 21
     # ImgsegmentSize = LabelsegmentSize + 2 * offset
@@ -65,7 +65,7 @@ def getbatch(DatafileFold, batch_size, iteration, maximumcase, logging, Imgsegme
         with mp_pool as pool:
             results = pool.starmap(getsampleskitsatlas,
                                    zip(kimg, samplefromthiscase[kimg], repeat(Imgreadc1), repeat(Labelread), 
-                                       repeat(ImgsegmentSize), repeat(LabelsegmentSize), caselist[kimg], repeat(seednum)))
+                                       repeat(ImgsegmentSize), repeat(LabelsegmentSize), caselist[kimg], repeat(seednum), repeat(channel)))
 
 
     except mp.TimeoutError:
@@ -100,27 +100,33 @@ def getbatch(DatafileFold, batch_size, iteration, maximumcase, logging, Imgsegme
     return batchxnor, batchy, listr, None
 
 def getsampleskitsatlas(kimg, samplefromthiscase, Imgreadc1, Labelread,
-                        ImgsegmentSize, LabelsegmentSize, numr, seednum):
+                        ImgsegmentSize, LabelsegmentSize, numr, seednum, channel):
 
     np.random.seed(seednum + kimg)
     
     Imgnamec1 = Imgreadc1[numr]
     Imgloadc1 = nib.load(Imgnamec1)
     Imgc1 = Imgloadc1.get_fdata()
+    # load the second channel
+    if channel > 1:
+        # for flair and dwi
+        Imgloadc2 = nib.load(Imgnamec1.replace('image.nii.gz', 'image_c2.nii.gz'))
+        Imgc2 = Imgloadc2.get_fdata()
+        channels = np.stack((Imgc1, Imgc2), axis = 0)
+    else:
+        channels = Imgc1[None, ...] ## add one dimension
     Labelname = Labelread[numr]
     Labelload = nib.load(Labelname)
     gt_lbl_img = Labelload.get_fdata()
 
     roi_mask = np.ones(gt_lbl_img.shape)
 
-    channels = Imgc1[None, ...] ## add one dimension
-
     batchxnor, batchy, numlist = getsamples(channels, gt_lbl_img, roi_mask, samplefromthiscase,
-                    ImgsegmentSize, LabelsegmentSize)
+                    ImgsegmentSize, LabelsegmentSize, channel)
 
     return batchxnor, batchy, numr, numlist
 
-def getsamples(channels, gt_lbl_img, roi_mask, samplefromthiscase, ImgsegmentSize, LabelsegmentSize):
+def getsamples(channels, gt_lbl_img, roi_mask, samplefromthiscase, ImgsegmentSize, LabelsegmentSize, channel):
 
     # local_state = np.random.RandomState()
     '''
@@ -133,14 +139,14 @@ def getsamples(channels, gt_lbl_img, roi_mask, samplefromthiscase, ImgsegmentSiz
     range_x, range_y, range_z = roi_mask.shape
 
     
-    Imgenlarge = np.zeros((1, max(ImgsegmentSize[0],range_x), max(ImgsegmentSize[1],range_y), max(ImgsegmentSize[2],range_z)))
+    Imgenlarge = np.zeros((channel, max(ImgsegmentSize[0],range_x), max(ImgsegmentSize[1],range_y), max(ImgsegmentSize[2],range_z)))
     Maskenlarge = np.zeros((max(ImgsegmentSize[0],range_x), max(ImgsegmentSize[1],range_y), max(ImgsegmentSize[2],range_z)))
     Labelenlarge = np.zeros((max(ImgsegmentSize[0],range_x), max(ImgsegmentSize[1],range_y), max(ImgsegmentSize[2],range_z)))
     Imgenlarge[:, 0:range_x, 0:range_y, 0:range_z] = channels
     Labelenlarge[0:range_x, 0:range_y, 0:range_z] = gt_lbl_img
     Maskenlarge[0:range_x, 0:range_y, 0:range_z] = roi_mask
 
-    batchxnor = np.zeros((int(samplefromthiscase), 1, ImgsegmentSize[0], ImgsegmentSize[1], ImgsegmentSize[2]))
+    batchxnor = np.zeros((int(samplefromthiscase), channel, ImgsegmentSize[0], ImgsegmentSize[1], ImgsegmentSize[2]))
 
     batchy = np.zeros((int(samplefromthiscase), LabelsegmentSize[0], LabelsegmentSize[1], LabelsegmentSize[2]))
     numlist = np.zeros((int(samplefromthiscase)))

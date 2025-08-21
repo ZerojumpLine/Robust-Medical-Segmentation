@@ -6,7 +6,7 @@ from utilities import SoftDiceLoss, mSoftDiceLoss, resize_segmentation, one_hot_
 from tensorboard_logger import log_value
 import torch.nn.functional as F
 import time
-from common_test_Unet import nntestProstate, nntestATLAS, nntestCardiac
+from common_test_Unet import nntestProstate, nntestATLAS, nntestCardiac, nntestMeningioma
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -52,6 +52,8 @@ def calculate_loss_origin(args, target_var, output, do_mixup = False):
             targetpickx = targetpicks[:, np.newaxis]
             s = np.ones(3) * 0.5 ** kds
             if args.ATLAS0Cardiac1Prostate2 == 1: # training with 128*128*8
+                s[2] = 1
+            if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4: # training with 256*256*16
                 s[2] = 1
             axes = list(range(2, len(targetpickx.shape)))
             new_shape = np.array(targetpickx.shape).astype(float)
@@ -220,6 +222,23 @@ def validateATLAS(DatafileValFold, model, logging, epoch, Savename, args):
         log_value('DSClesion', DSC[0], epoch)
         log_value('SENSlesion', SENS[0], epoch)
         log_value('PREClesion', PREC[0], epoch)
+    return DSC.mean()
+
+def validateMeningioma(DatafileValFold, model, logging, epoch, Savename, args):
+    model.eval()
+
+    DSC, SENS, PREC = nntestMeningioma(model, True, Savename + '/results/', False,
+                        ImgsegmentSize=args.patch_size, 
+                        deepsupervision=args.deepsupervision, DatafileValFold=DatafileValFold, channel = args.NumsInputChannel)
+
+    logging.info('DSC ' + str(DSC))
+    logging.info('SENS ' + str(SENS))
+    logging.info('PREC ' + str(PREC))
+    # log to TensorBoard
+    if args.tensorboard:
+        log_value('DSCtumor', DSC[0], epoch)
+        log_value('SENStumor', SENS[0], epoch)
+        log_value('PRECtumor', PREC[0], epoch)
     return DSC.mean()
 
 def validateProstate(DatafileValFold, model, logging, epoch, Savename, args):

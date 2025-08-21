@@ -102,6 +102,22 @@ def main():
         DatafileValFold = './data/datafile/Dataset_Prostate/BMCtest/'
         args.NumsInputChannel = 1
         args.NumsClass = 2
+    if args.ATLAS0Cardiac1Prostate2 == 3:
+        dataset = 'Meningioma'
+        # this is for meningioma
+        from common_Unet import validateMeningioma as validate
+        DatafileTrainqueueFold = './data/datafile/Dataset_Meningioma/train/'
+        DatafileValFold = './data/datafile/Dataset_Meningioma/val/'
+        args.NumsInputChannel = 1
+        args.NumsClass = 2
+    if args.ATLAS0Cardiac1Prostate2 == 4:
+        dataset = 'Meningioma'
+        # this is for meningioma, using two channels (flair + dwi)
+        from common_Unet import validateMeningioma as validate
+        DatafileTrainqueueFold = './data/datafile/Dataset_Meningioma/train/'
+        DatafileValFold = './data/datafile/Dataset_Meningioma/val/'
+        args.NumsInputChannel = 2
+        args.NumsClass = 2
 
     ############################## init logging #########################
     Savename = args.name
@@ -151,6 +167,9 @@ def main():
         net_num_pool_op_kernel_sizes.append([2, 2, 1])
         for kiter in range(0, args.downsampling - 1):  # (0,5)
             net_num_pool_op_kernel_sizes.append([2, 2, 2])
+    if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4:
+        for kiter in range(0, args.downsampling):  # (0,5)
+            net_num_pool_op_kernel_sizes.append([2, 2, 1])
     net_conv_kernel_sizes = []
     for kiter in range(0,args.downsampling+1) : # (0,6)
         net_conv_kernel_sizes.append([3,3,3])
@@ -199,17 +218,17 @@ def main():
             # sequence processing
             # sample more validation cases in one iteration
             sampling_results = getbatch(DatafileTrainqueueFold, args.batch_size, args.numIteration, args.maxsample, 
-                                        logging, ImgsegmentSize=args.patch_size)
+                                        logging, ImgsegmentSize=args.patch_size, channel=args.NumsInputChannel)
 
         elif epoch == args.start_epoch:  # Not previously submitted in case of first epoch
             # to get the sampling from the multiprocess. the sampling parameters might have mismatch
             # get one results.
             sampling_results = getbatch(DatafileTrainqueueFold, args.batch_size, args.numIteration, args.maxsample, 
-                                        logging, ImgsegmentSize=args.patch_size)
+                                        logging, ImgsegmentSize=args.patch_size, channel=args.NumsInputChannel)
             # sub new job.
             sampling_job = mp_pool.apply_async(getbatch, (DatafileTrainqueueFold, args.batch_size,
                                                           args.numIteration, args.maxsample,
-                                                          logging, args.patch_size))
+                                                          logging, args.patch_size, args.NumsInputChannel))
         elif epoch == args.epochs - 1:  # last iteration
             # do not need to submit job
             sampling_results = sampling_job.get()
@@ -221,7 +240,7 @@ def main():
             ## otherwise it consumes a lot of memory
             sampling_job = mp_pool.apply_async(getbatch, (DatafileTrainqueueFold, args.batch_size,
                                                           args.numIteration, args.maxsample,
-                                                          logging, args.patch_size))
+                                                          logging, args.patch_size, args.NumsInputChannel))
         
         inputnor = sampling_results[0]
         target = sampling_results[1]

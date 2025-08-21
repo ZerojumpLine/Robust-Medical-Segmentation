@@ -80,6 +80,15 @@ Brain lesion
 python UNetSegmentationTrain.py --name 3DUNet_vanilla_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --det
 ```
 
+Meningioma
+```
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Meningioma_det_z16 --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 256 256 16 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 3 --gpu 0 --det
+```
+
+```
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Meningioma_det_z16_c2 --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 256 256 16 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 4 --gpu 1 --det
+```
+
 ### Class balanced training.
 
 Brain lesion asymmetric large margin loss
@@ -118,6 +127,11 @@ Brain lesion GIN
 
 ```
 python UNetSegmentationTrain.py --name 3DUNet_GIN_ATLAS_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 128 128 128 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 0 --gpu 0 --GIN --det
+```
+
+Meningioma
+```
+python UNetSegmentationTrain.py --name 3DUNet_GIN_Meningioma_det --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 256 256 32 --epochs 1000 --evalevery 100 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-2 --print-freq 20 --ATLAS0Cardiac1Prostate2 3 --GIN --gpu 0 --det
 ```
 
 

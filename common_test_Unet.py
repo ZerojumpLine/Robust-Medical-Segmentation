@@ -102,6 +102,98 @@ def nntestATLAS(model, saveresults, name, trainval = False, ImgsegmentSize = [12
 
     return DSCmean, SENSmean, PRECmean
 
+def nntestMeningioma(model, saveresults, name, trainval = False, ImgsegmentSize = [128, 128, 128], deepsupervision = False, DatafileValFold=None, tta=False, ttalist = [0], ttalistprob=[1], NumsClass = 2, channel = 1):
+    batch_size = 1
+    NumsInputChannel = 1
+    if trainval == False:
+        DatafileFold = DatafileValFold
+        DatafileImgc1 = DatafileFold + 'Imgpre-eval.txt'
+        DatafileLabel = DatafileFold + 'seg-eval.txt'
+    else:
+        DatafileFold = DatafileValFold
+        DatafileImgc1 = DatafileFold + 'Imgpre-train.txt'
+        DatafileLabel = DatafileFold + 'seg-train.txt'
+
+    Imgfilec1 = open(DatafileImgc1)
+    Imgreadc1 = Imgfilec1.read().splitlines()
+    Labelfile = open(DatafileLabel)
+    Labelread = Labelfile.read().splitlines()
+
+    DSClist = []
+    SENSlist = []
+    PREClist = []
+    PredSumlist = []
+
+    for numr in range(len(Imgreadc1)):
+        # for numr in range(10, 11):
+
+        Imgnamec1 = Imgreadc1[numr]
+        Imgloadc1 = nib.load(Imgnamec1)
+        Imgc1 = Imgloadc1.get_fdata()
+        if channel > 1:
+            # for flair and dwi
+            Imgloadc2 = nib.load(Imgnamec1.replace('image.nii.gz', 'image_c2.nii.gz'))
+            Imgc2 = Imgloadc2.get_fdata()
+            channels = np.stack((Imgc1, Imgc2), axis = 0)
+        else:
+            channels = Imgc1[None, ...] ## add one dimension
+        Labelname = Labelread[numr]
+        Labelload = nib.load(Labelname)
+        gtlabel = Labelload.get_fdata()
+
+        knamelist = Imgnamec1.split("/")
+        kname = knamelist[-2]
+
+        hp_results = tta_rolling(model, channels, batch_size, ImgsegmentSize, NumsInputChannel, NumsClass, tta, ttalist, ttalistprob, deepsupervision)
+
+        predSegmentation = np.argmax(hp_results, axis=0)
+        ## use the mask to constratin the results
+        PredSegmentationWithinRoi = predSegmentation
+        # PredSegmentationWithinRoi = predSegmentation
+        # sio.savemat('./result.mat', {'results': PredSegmentationWithinRoi})
+        imgToSave = PredSegmentationWithinRoi
+
+        if saveresults:
+            npDtype = np.dtype(np.float32)
+            proxy_origin = nib.load(Imgnamec1)
+            hdr_origin = proxy_origin.header
+            affine_origin = proxy_origin.affine
+            proxy_origin.uncache()
+
+            newLabelImg = nib.Nifti1Image(imgToSave, affine_origin)
+            newLabelImg.set_data_dtype(npDtype)
+
+            dimsImgToSave = len(imgToSave.shape)
+            newZooms = list(hdr_origin.get_zooms()[:dimsImgToSave])
+            if len(newZooms) < dimsImgToSave:  # Eg if original image was 3D, but I need to save a multi-channel image.
+                newZooms = newZooms + [1.0] * (dimsImgToSave - len(newZooms))
+            newLabelImg.header.set_zooms(newZooms)
+
+            directory = "./output/Meningioma/%s/" % (name)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            savename = directory + 'pred_' + kname + '_Segm.nii.gz'
+            nib.save(newLabelImg, savename)
+
+        labelc1 = gtlabel == 1
+        predc1 = imgToSave == 1
+
+        DSCc1, SENSc1, PRECc1 = ComputMetric(labelc1, predc1)
+
+        DSClist.append([DSCc1])
+        SENSlist.append([SENSc1])
+        PREClist.append([PRECc1])
+        print('case ' + str(numr) + ' done')
+
+    DSClist = np.array(DSClist)
+    DSCmean = DSClist.mean(axis=0)
+    SENSlist = np.array(SENSlist)
+    SENSmean = SENSlist.mean(axis=0)
+    PREClist = np.array(PREClist)
+    PRECmean = PREClist.mean(axis=0)
+
+    return DSCmean, SENSmean, PRECmean
+
 def nntestProstate(model, saveresults, name, trainval = False, ImgsegmentSize = [128, 128, 128], deepsupervision = False, DatafileValFold=None, tta=False, ttalist = [0], ttalistprob=[1], NumsClass = 2):
     batch_size = 1
     NumsInputChannel = 1
