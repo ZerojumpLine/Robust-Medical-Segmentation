@@ -28,13 +28,11 @@ class AverageMeter(object):
 
 def get_lr(epoch, args):
     warmup_epochs = 20
-    lr_min = args.lr * 1e-3
+    lr_min = args.lr * 1e-2
 
     if epoch < warmup_epochs:
-        # 热身阶段：线性增长
-        return args.lr * (epoch / warmup_epochs)
+        return args.lr * ((epoch + 1) / warmup_epochs)
     else:
-        # 余弦下降阶段
         progress = (epoch - warmup_epochs) / (args.epochs - warmup_epochs)
         return lr_min + 0.5 * (args.lr - lr_min) * (1 + math.cos(math.pi * progress))
 
