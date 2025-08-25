@@ -28,6 +28,7 @@ parser = argparse.ArgumentParser(description='PyTorch nnU-Net Training')
 parser.add_argument('--name', default='3DUnet', type=str, help='name of experiment')
 parser.add_argument('--print-freq', '-p', default=40, type=int, help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, help='path to latest checkpoint (default: none)')
+parser.add_argument('--resume-pretrained', default='', type=str, help='resume to the pretrained model, only load fitted weights')
 parser.add_argument('--tensorboard', help='Log progress to TensorBoard', action='store_true')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 # Training configures.
@@ -187,6 +188,8 @@ def main():
         optimizer = torch.optim.Adam(model.parameters(), lr = args.lr, weight_decay=3e-5, amsgrad=True)
     if args.sgd0orAdam1orRms2 == 2 :
         optimizer = torch.optim.RMSprop(model.parameters(), lr=args.lr, alpha=0.9, eps=1e-04, weight_decay=0.0001, momentum=0.6)
+    if args.sgd0orAdam1orRms2 == 3 : # for fine-tuning
+        optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.05, betas=(0.9, 0.999))
 
     # get the number of model parameters
     logging.info('Number of model parameters: {} MB'.format(sum([p.data.nelement() for p in model.parameters()])/1e6))
@@ -194,6 +197,44 @@ def main():
     model = model.cuda()
 
     # optionally resume from a checkpoint
+    if args.resume_pretrained:
+        if os.path.isfile(args.resume_pretrained):
+            logging.info("=> loading checkpoint '{}'".format(args.resume_pretrained))
+            checkpoint = torch.load(args.resume_pretrained, map_location='cuda:' + str(args.gpu))
+            
+            # Load checkpoint with architectural differences handling
+            pretrained_state_dict = checkpoint['network_weights']
+            model_state_dict = model.state_dict()
+            
+            # Filter and load compatible weights
+            loaded_keys = []
+            skipped_keys = []
+            
+            for name, param in pretrained_state_dict.items():
+                if name in model_state_dict:
+                    # Check if shapes are compatible
+                    if param.shape == model_state_dict[name].shape:
+                        model_state_dict[name] = param
+                        loaded_keys.append(name)
+                    else:
+                        skipped_keys.append(name)
+                        logging.info("=> Skipping '{}' due to shape mismatch: checkpoint {} vs model {}".format(
+                            name, param.shape, model_state_dict[name].shape))
+                else:
+                    skipped_keys.append(name)
+                    logging.info("=> Skipping '{}' as it doesn't exist in current model".format(name))
+            
+            # Load the filtered state dict
+            model.load_state_dict(model_state_dict)
+            
+            logging.info("=> Successfully loaded {} layers, skipped {} layers".format(len(loaded_keys), len(skipped_keys)))
+            if loaded_keys:
+                logging.info("=> Loaded layers: {}".format(loaded_keys[:5] + ['...'] if len(loaded_keys) > 5 else loaded_keys))
+            if skipped_keys:
+                logging.info("=> Skipped layers: {}".format(skipped_keys[:5] + ['...'] if len(skipped_keys) > 5 else skipped_keys))
+        else:
+            logging.info("=> no checkpoint found at '{}'".format(args.resume_pretrained))
+
     if args.resume:
         if os.path.isfile(args.resume):
             logging.info("=> loading checkpoint '{}'".format(args.resume))

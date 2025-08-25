@@ -5,6 +5,7 @@ import torch.nn as nn
 from utilities import SoftDiceLoss, mSoftDiceLoss, resize_segmentation, one_hot_embedding
 from tensorboard_logger import log_value
 import torch.nn.functional as F
+import math
 import time
 from common_test_Unet import nntestProstate, nntestATLAS, nntestCardiac, nntestMeningioma
 
@@ -25,10 +26,25 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
+def get_lr(epoch, args):
+    warmup_epochs = 20
+    lr_min = args.lr * 1e-3
+
+    if epoch < warmup_epochs:
+        # 热身阶段：线性增长
+        return args.lr * (epoch / warmup_epochs)
+    else:
+        # 余弦下降阶段
+        progress = (epoch - warmup_epochs) / (args.epochs - warmup_epochs)
+        return lr_min + 0.5 * (args.lr - lr_min) * (1 + math.cos(math.pi * progress))
+
 def adjust_learning_rate(optimizer, epoch, args):
     """Sets the learning rate to the initial LR divided by 2 at 17th, 22th, 27th, 30th and 33th epochs"""
-    # and more to converge
-    lr = args.lr * (1 - epoch / args.epochs)**0.9
+    if args.sgd0orAdam1orRms2 == 3 : # for fine-tuning
+        lr = get_lr(epoch, args)
+    else:
+        # and more to converge
+        lr = args.lr * (1 - epoch / args.epochs)**0.9
     
     # log to TensorBoard
     if args.tensorboard:
