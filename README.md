@@ -91,7 +91,7 @@ python UNetSegmentationTrain.py --name 3DUNet_vanilla_Meningioma_det_x320z20_c2 
 
 Load checkpoints
 ```
-python UNetSegmentationTrain.py --name 3DUNet_vanilla_Meningioma_det_x320z20_c2_MAE --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 320 320 20 --epochs 500 --evalevery 20 --numIteration 100 --sgd0orAdam1orRms2 0 --lr 1e-4 --print-freq 20 --ATLAS0Cardiac1Prostate2 4 --gpu 1 --det --resume-pretrained ./MAE_Pretrain/checkpoint_best.pth
+python UNetSegmentationTrain.py --name 3DUNet_vanilla_Meningioma_det_x320z20_c2_MAE_AdamWlr1e4 --tensorboard --features 30 --deepsupervision --batch-size 2 --patch-size 320 320 20 --epochs 1000 --evalevery 20 --numIteration 100 --sgd0orAdam1orRms2 3 --lr 1e-4 --print-freq 20 --ATLAS0Cardiac1Prostate2 4 --gpu 1 --det --resume-pretrained ./MAE_Pretrain/checkpoint_best.pth
 ```
 
 ### Class balanced training.

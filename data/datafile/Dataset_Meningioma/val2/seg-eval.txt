@@ -1,0 +1,5 @@
+./data/Dataset_Meningioma/ses_1/22/seg.nii.gz
+./data/Dataset_Meningioma/ses_1/23/seg.nii.gz
+./data/Dataset_Meningioma/ses_1/3/seg.nii.gz
+./data/Dataset_Meningioma/ses_1/7/seg.nii.gz
+./data/Dataset_Meningioma/ses_1/9/seg.nii.gz

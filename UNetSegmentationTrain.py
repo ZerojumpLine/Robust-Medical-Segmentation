@@ -119,6 +119,15 @@ def main():
         DatafileValFold = './data/datafile/Dataset_Meningioma/val/'
         args.NumsInputChannel = 2
         args.NumsClass = 2
+    if args.ATLAS0Cardiac1Prostate2 == 5:
+        dataset = 'Meningioma'
+        # this is for meningioma, using two channels (flair + dwi)
+        # another split
+        from common_Unet import validateMeningioma as validate
+        DatafileTrainqueueFold = './data/datafile/Dataset_Meningioma/train2/'
+        DatafileValFold = './data/datafile/Dataset_Meningioma/val2/'
+        args.NumsInputChannel = 2
+        args.NumsClass = 2
 
     ############################## init logging #########################
     Savename = args.name
@@ -168,7 +177,7 @@ def main():
         net_num_pool_op_kernel_sizes.append([2, 2, 1])
         for kiter in range(0, args.downsampling - 1):  # (0,5)
             net_num_pool_op_kernel_sizes.append([2, 2, 2])
-    if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4:
+    if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4 or args.ATLAS0Cardiac1Prostate2 == 5:
         for kiter in range(0, args.downsampling):  # (0,5)
             net_num_pool_op_kernel_sizes.append([2, 2, 1])
     net_conv_kernel_sizes = []

@@ -2,4 +2,4 @@
 ./data/Dataset_Meningioma/ses_1/4/seg.nii.gz
 ./data/Dataset_Meningioma/ses_1/5/seg.nii.gz
 ./data/Dataset_Meningioma/ses_1/6/seg.nii.gz
-./data/Dataset_Meningioma/ses_1/9/seg.nii.gz
+./data/Dataset_Meningioma/ses_1/8/seg.nii.gz

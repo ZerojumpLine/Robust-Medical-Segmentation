@@ -67,7 +67,7 @@ def calculate_loss_origin(args, target_var, output, do_mixup = False):
             s = np.ones(3) * 0.5 ** kds
             if args.ATLAS0Cardiac1Prostate2 == 1: # training with 128*128*8
                 s[2] = 1
-            if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4: # training with 256*256*16
+            if args.ATLAS0Cardiac1Prostate2 == 3 or args.ATLAS0Cardiac1Prostate2 == 4 or args.ATLAS0Cardiac1Prostate2 == 5: # training with 256*256*16
                 s[2] = 1
             axes = list(range(2, len(targetpickx.shape)))
             new_shape = np.array(targetpickx.shape).astype(float)
